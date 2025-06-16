@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga Nuestra App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.postimg.cc/sgKn7rz9/IMG-20250609-WA0008.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 140, 0, 0.3); /* Overlay naranja semitransparente */
+            z-index: -1;
+        }
+        
+        #video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #video-player {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+            display: none;
+            position: relative;
+        }
+        
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        h1 {
+            color: #000000;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.8s ease 0.3s;
+        }
+        
+        .visible h1 {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        p {
+            margin-bottom: 30px;
+            font-size: 18px;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.8s ease 0.5s;
+        }
+        
+        .visible p {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .download-btn {
+            background-color: #000000;
+            color: #FF8C00;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s ease 0.7s;
+        }
+        
+        .visible .download-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .download-btn:hover {
+            background-color: #333333;
+            transform: translateY(-3px) scale(1);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .download-btn::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(255, 140, 0, 0.1);
+            border-radius: 50px;
+            opacity: 0;
+            transition: all 0.5s;
+        }
+        
+        .download-btn:hover::after {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .download-btn::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.3) 45%,
+                rgba(255, 255, 255, 0) 60%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: translateX(-100%) rotate(30deg);
+            transition: all 0.6s;
+        }
+        
+        .download-btn:hover::before {
+            transform: translateX(100%) rotate(30deg);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .download-btn {
+            animation: pulse 2s infinite;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            object-fit: contain;
+            opacity: 0;
+            transform: scale(0.5) rotate(-30deg);
+            transition: all 0.8s ease 0.1s;
+        }
+        
+        .visible .logo {
+            opacity: 1;
+            transform: scale(1) rotate(0);
+        }
+        
+        #unmute-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255,140,0,0.8);
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 1001;
+            display: none;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        #unmute-btn:hover {
+            background-color: rgba(255,140,0,1);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="video-player" autoplay muted>
+            <source src="https://www.dropbox.com/scl/fi/s0mhbw1xxb94jkz22edz5/VID-20250615-WA0013-1.mp4?rlkey=omnrimzpzmhq6kof80wqctemc&st=vqy8ykkz&raw=1" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+        </video>
+        <button id="unmute-btn">Activar Sonido</button>
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="https://www.dropbox.com/scl/fi/3gnc6sadywpb24ps9z4k9/No-eres-juego-de-nintendo-J-bazquez.wav?rlkey=79nintn3bhle2lyye1nb249e6&st=qyfegwov&raw=1" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+    
+    <div class="container" id="mainContainer">
+        <img src="https://i.postimg.cc/hvX9NPy3/Screenshot-20250606-180521.jpg" alt="Logo de la App" class="logo">
+        <h1>Descarga Nuestra Aplicación</h1>
+        <p>Disfruta de todas las funciones en tu dispositivo móvil</p>
+        <a href="https://apk.e-droid.net/apk/app3346530-epq9vc.apk?v=16" class="download-btn" download>DESCARGAR AHORA</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoContainer = document.getElementById('video-container');
+            const videoPlayer = document.getElementById('video-player');
+            const mainContainer = document.getElementById('mainContainer');
+            const unmuteBtn = document.getElementById('unmute-btn');
+            const backgroundMusic = document.getElementById('background-music');
+            
+            mainContainer.style.display = 'none';
+            
+            videoPlayer.muted = true;
+            backgroundMusic.volume = 0.5;
+            
+            setTimeout(() => {
+                unmuteBtn.style.display = 'block';
+            }, 1000);
+            
+            unmuteBtn.addEventListener('click', function() {
+                videoPlayer.muted = false;
+                unmuteBtn.style.display = 'none';
+                videoPlayer.play().catch(e => console.log('Error al reproducir:', e));
+            });
+            
+            videoPlayer.addEventListener('ended', function() {
+                videoContainer.style.display = 'none';
+                mainContainer.style.display = 'block';
+                
+                setTimeout(function() {
+                    mainContainer.classList.add('visible');
+                }, 100);
+                
+                startBackgroundMusic();
+            });
+            
+            function startBackgroundMusic() {
+                const playPromise = backgroundMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log('Autoplay de música bloqueado, mostrando botón');
+                        createMusicButton();
+                    });
+                }
+            }
+            
+            function createMusicButton() {
+                const musicBtn = document.createElement('button');
+                musicBtn.textContent = 'Activar Música';
+                musicBtn.style.position = 'fixed';
+                musicBtn.style.bottom = '20px';
+                musicBtn.style.right = '20px';
+                musicBtn.style.padding = '10px 20px';
+                musicBtn.style.backgroundColor = '#000000';
+                musicBtn.style.color = '#FF8C00';
+                musicBtn.style.border = 'none';
+                musicBtn.style.borderRadius = '50px';
+                musicBtn.style.cursor = 'pointer';
+                musicBtn.style.zIndex = '1002';
+                
+                musicBtn.addEventListener('click', function() {
+                    backgroundMusic.play()
+                        .then(() => musicBtn.remove())
+                        .catch(e => console.log('Error al reproducir música:', e));
+                });
+                
+                document.body.appendChild(musicBtn);
+            }
+            
+            const playPromise = videoPlayer.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log('Reproducción automática iniciada');
+                }).catch(error => {
+                    console.log('Auto-play prevented:', error);
+                    unmuteBtn.style.display = 'block';
+                    unmuteBtn.textContent = 'Haz clic para reproducir';
+                    
+                    unmuteBtn.addEventListener('click', function() {
+                        videoPlayer.play().then(() => {
+                            videoPlayer.muted = false;
+                            unmuteBtn.style.display = 'none';
+                        }).catch(e => {
+                            console.log('Error al reproducir:', e);
+                            videoContainer.style.display = 'none';
+                            mainContainer.style.display = 'block';
+                            mainContainer.classList.add('visible');
+                            startBackgroundMusic();
+                        });
+                    });
+                });
+            }
+            
+            const downloadBtn = document.querySelector('.download-btn');
+            if(downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    console.log('Descarga iniciada!');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
